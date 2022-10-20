@@ -3,6 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import PixabayAPI from './js/pixabayAPI';
 import { refs } from './js/refs';
 import createCard from './js/cardMarkup';
+import { spinnerPlay, spinnerStop } from './js/spinner';
 
 import './sass/index.scss';
 
@@ -15,6 +16,7 @@ const callback = async function (entries, observer) {
       observer.unobserve(entry.target);
 
       try {
+        spinnerPlay();
         const { hits, totalHits } = await pixabay.getPhotos();
         createCard(hits);
         pixabay.totalPages(totalHits);
@@ -29,6 +31,8 @@ const callback = async function (entries, observer) {
           'Sorry, something went wrong here. Please try again!'
         );
         clearPage();
+      } finally {
+        spinnerStop();
       }
     }
   });
@@ -58,6 +62,7 @@ const onSubmit = async event => {
   clearPage();
 
   try {
+    spinnerPlay();
     const { hits, totalHits } = await pixabay.getPhotos();
     if (hits.length === 0) {
       return Notify.failure(
@@ -77,6 +82,8 @@ const onSubmit = async event => {
       'Sorry, something went wrong here. Please try again!'
     );
     clearPage();
+  } finally {
+    spinnerStop();
   }
 };
 
